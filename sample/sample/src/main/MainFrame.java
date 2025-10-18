@@ -59,7 +59,7 @@ public class MainFrame extends JFrame{
 		cardPanel = new JPanel(cardLayout);
 		
 		cardPanel.add(mainPanel, "MainPanel");
-        cardPanel.add(new RestrictedSitesPanel(), "Restricted Panel");
+        cardPanel.add(new RestrictedSitesPanel(this), "Restricted Panel");
         cardPanel.add(new Window3(), "Window3");
 		
 	}

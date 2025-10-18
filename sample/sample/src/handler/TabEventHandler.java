@@ -51,6 +51,7 @@ public class TabEventHandler implements HttpHandler{
 	            
 	            TabEvent tabEvent = new TabEvent(id, name, url, timestamp);
 	            addTableItem(tabEvent);
+	            System.out.println(tabEvent);
 	            // Get pc_id by UUID
 	            Optional<Integer> pcIdOpt = getIdByUuid(conn, uuid);
 	            if (pcIdOpt.isEmpty()) {

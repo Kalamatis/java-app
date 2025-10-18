@@ -2,6 +2,7 @@ package windows;
 import javax.swing.*;
 
 import database.DatabaseManager;
+import main.MainFrame;
 import w2components.LeftPanel;
 import w2components.RightPanel;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 public class RestrictedSitesPanel extends JPanel {
     private DatabaseManager dbManager;
+    MainFrame frame;
     private LeftPanel leftPanel;
     private JTextField siteField;
     private JComboBox<String> levelBox;
@@ -29,7 +31,12 @@ public class RestrictedSitesPanel extends JPanel {
     	return leftPanel;
     }
     
-    public RestrictedSitesPanel() {
+    public MainFrame getMainFrame() {
+    	return frame;
+    }
+    
+    public RestrictedSitesPanel(MainFrame frame) {
+    	this.frame = frame;
         dbManager = DatabaseManager.getInstance();
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

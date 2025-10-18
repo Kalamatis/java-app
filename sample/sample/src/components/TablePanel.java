@@ -1,11 +1,13 @@
 package components;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Vector;
 
@@ -17,6 +19,7 @@ import javax.swing.RowFilter;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -35,6 +38,8 @@ public class TablePanel extends JPanel{
 	Vector<String> colName = new Vector<>();
 	TableRowSorter<TableModel> sorter;
 	DatabaseManager db = DatabaseManager.getInstance();
+	
+	private Map<String, Integer> restrictions;
 
 	public void addTableItem(Vector<Object> item) {
 		model.addRow(item);
@@ -139,8 +144,17 @@ public class TablePanel extends JPanel{
 		this.PANEL_HEIGHT = mainPanel.getMainPanelHeight();
 		
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
+		loadRestrictions();
 		initComponents();
 	}
+	
+	public void loadRestrictions() {
+		if(restrictions != null)
+			restrictions.clear();
+        // Example: Fetch from DB
+        restrictions = db.getRestrictedWebsites(); 
+        // Implement this method to return Map<String, Integer>
+    }
 	
 	private void initComponents() {
 		createTable();
@@ -153,6 +167,7 @@ public class TablePanel extends JPanel{
 	}
 
 	private void createTable() {
+		
 		addCol(colName);
 		model = new DefaultTableModel(null, colName){
 		    @Override
@@ -160,7 +175,33 @@ public class TablePanel extends JPanel{
 		        return false; // no cell is editable
 		    }
 		};
-		table = new JTable(model);
+		table = new JTable(model)
+		{
+            @Override
+            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+                Component c = super.prepareRenderer(renderer, row, column);
+                String website = (String) getValueAt(row, 2);
+                Integer level = restrictions.get(website);
+
+                if (level != null) {
+                    switch (level) {
+                        case 3 -> c.setBackground(Color.RED);
+                        case 2 -> c.setBackground(Color.YELLOW);
+                        default -> c.setBackground(Color.WHITE);
+                    }
+                } else {
+                    c.setBackground(Color.WHITE);
+                }
+
+                // Ensure text remains visible
+                if (isRowSelected(row)) {
+                    c.setBackground(c.getBackground().darker());
+                }
+
+                return c;
+            }
+        };
+        table.setFillsViewportHeight(true);
 		tableLayout();
 		setTableSorter();
 		
@@ -171,6 +212,7 @@ public class TablePanel extends JPanel{
 		
 		add(scrollPane);
 		
+		
 	}
 	
 	public void filter(String text) {
@@ -180,8 +222,6 @@ public class TablePanel extends JPanel{
 			sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text)); // (?i) = ignore case
 		}
 	}
-	
-	
 	
 	private void tableLayout() {
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);

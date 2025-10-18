@@ -2,7 +2,9 @@ package database;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The {@code DatabaseManager} class is responsible for managing the
@@ -161,6 +163,20 @@ public class DatabaseManager {
             e.printStackTrace();
         }
         return list;
+    }
+    
+    public synchronized Map<String, Integer> getRestrictedWebsites() {
+        Map<String, Integer> map = new HashMap<>();
+        try (Connection conn = getConnection();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery("SELECT website, level FROM restricted")) {
+            while (rs.next()) {
+                map.put(rs.getString("website"), rs.getInt("level"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 
 //    /** Closes the database connection. */

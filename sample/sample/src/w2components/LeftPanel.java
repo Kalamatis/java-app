@@ -46,6 +46,7 @@ public class LeftPanel extends JPanel{
         dbManager.addRestrictedSite(site, level);
         siteField.setText("");
         refreshList();
+        resSitesPanel.getMainFrame().getMainPanel().getTablePanel().loadRestrictions();
     }
 
     // ---- Remove Site ----
