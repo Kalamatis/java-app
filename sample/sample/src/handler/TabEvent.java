@@ -18,9 +18,6 @@ public class TabEvent {
     	this.time = time;
     }
 
-    // Empty constructor (useful if setting data later)
-    public TabEvent() {}
-
     // === Getters ===
     public int getId() {return id;}
 

@@ -20,7 +20,7 @@ public class Main {
 		
 		try {
             // Choose your theme
-            UIManager.setLookAndFeel(new FlatGrayIJTheme());
+            UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
             System.err.println("Failed to initialize FlatLaf: " + e.getMessage());
         }

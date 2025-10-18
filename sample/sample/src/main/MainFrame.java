@@ -1,64 +1,35 @@
 package main;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Vector;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import database.DatabaseManager;
-import database.PCRepository;
 import handler.HTTPHandler;
-import handler.TabEvent;
+import windows.MainPanel;
+import windows.RestrictedSitesPanel;
+import windows.Window3;
 
 public class MainFrame extends JFrame{
 	private final int FRAME_WIDTH = 1000;
-	private final int FRAME_HEIGHT = 800;
+	private final int FRAME_HEIGHT = 700;
 	DatabaseManager db = DatabaseManager.getInstance();
+	CardLayout cardLayout;
+	JPanel cardPanel;
+	MenuBar menuBar;
 	MainPanel mainPanel;
 	HTTPHandler httpHandler;
 //	Vector<String> list = new Vector<>();
 	
-//	public void addPCNumber(TabEvent tabEvent) {
-//		DefaultComboBoxModel<String> model = mainPanel.getFilterPanel().getSpecificDeviceModel();
-//		model.removeAllElements(); // optional: clear old items before adding new ones
-//		Connection conn = db.getConnection();
-//		synchronized(conn) {
-//			try (PreparedStatement stmt = conn.prepareStatement("SELECT id FROM pcs");
-//			         ResultSet rs = stmt.executeQuery()) {
-//
-//			        while (rs.next()) {
-//			            String id = rs.getString("pc_id");
-//
-//			            boolean exists = false;
-//			            for (int i = 0; i < model.getSize(); i++) {
-//			                if (model.getElementAt(i).equals(id)) {
-//			                    exists = true;
-//			                    break;
-//			                }
-//			            }
-//
-//			            if (!exists) {
-//			                model.addElement(id);
-//			            }
-//			        }
-//
-//			    } catch (SQLException e) {
-//			        e.printStackTrace();
-//			    }
-//		}
-//	    
-//	}
 
 //	public Vector<String> getPCNumbers() {
 //		return list;
 //	}
+
+	
 	
 	public MainFrame() throws IOException {
 		setSize(FRAME_WIDTH, FRAME_HEIGHT);
@@ -71,11 +42,34 @@ public class MainFrame extends JFrame{
 	}
 	
 	private void components() throws IOException {
-		
+		menuBar = new MenuBar(this);
 		mainPanel = new MainPanel(this);
 		httpHandler = new HTTPHandler(this);
 		
-		add(mainPanel, BorderLayout.CENTER);
+		createCardLayout();
+		
+		menuBar.attachFrame(this);
+		
+		setJMenuBar(menuBar);
+		add(cardPanel, BorderLayout.CENTER);
+	}
+	
+	private void createCardLayout() {
+		cardLayout = new CardLayout();
+		cardPanel = new JPanel(cardLayout);
+		
+		cardPanel.add(mainPanel, "MainPanel");
+        cardPanel.add(new RestrictedSitesPanel(), "Restricted Panel");
+        cardPanel.add(new Window3(), "Window3");
+		
+	}
+	
+	public CardLayout getCardLayout() {
+		return cardLayout;
+	}
+	
+	public JPanel getCardPanel() {
+		return cardPanel;
 	}
 	
 	public MainPanel getMainPanel() {

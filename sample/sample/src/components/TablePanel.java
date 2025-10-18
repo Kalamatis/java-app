@@ -23,7 +23,7 @@ import javax.swing.table.TableRowSorter;
 import database.DatabaseManager;
 import database.PCRepository;
 import handler.CheckWarningHandler;
-import main.MainPanel;
+import windows.MainPanel;
 
 public class TablePanel extends JPanel{
 	private int PANEL_WIDTH;
@@ -42,6 +42,10 @@ public class TablePanel extends JPanel{
 	
 	public void clearTableData() {
 	    model.setRowCount(0);
+	}
+	
+	public TableRowSorter<TableModel> getTableRowSorter() {
+		return sorter;
 	}
 	
 	public void sendWarning() {
@@ -150,7 +154,12 @@ public class TablePanel extends JPanel{
 
 	private void createTable() {
 		addCol(colName);
-		model = new DefaultTableModel(null, colName);
+		model = new DefaultTableModel(null, colName){
+		    @Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false; // no cell is editable
+		    }
+		};
 		table = new JTable(model);
 		tableLayout();
 		setTableSorter();
@@ -172,11 +181,13 @@ public class TablePanel extends JPanel{
 		}
 	}
 	
+	
+	
 	private void tableLayout() {
 		table.getColumnModel().getColumn(0).setPreferredWidth(100);
-		table.getColumnModel().getColumn(1).setPreferredWidth(300);
-		table.getColumnModel().getColumn(2).setPreferredWidth(200);
-		table.getColumnModel().getColumn(3).setPreferredWidth(200);
+		table.getColumnModel().getColumn(1).setPreferredWidth(100);
+		table.getColumnModel().getColumn(2).setPreferredWidth(500);
+		table.getColumnModel().getColumn(3).setPreferredWidth(100);
 	}
 	
 	private void addCol(Vector<String> colName) {

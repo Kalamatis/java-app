@@ -109,4 +109,39 @@ public class PCRepository {
         }
         return pcs;
     }
+    
+    public static Vector<Integer> getAllPcId(){
+    	Vector<Integer> ids = new Vector<>();
+    	
+    	Connection conn = db.getConnection();
+    	synchronized(conn) {
+    		try (Statement stmt = conn.createStatement();
+    	         ResultSet rs = stmt.executeQuery("SELECT id FROM pcs")) {
+    	            while (rs.next()) ids.add(rs.getInt("id"));
+    	            
+    	            
+    	        } catch (SQLException e) {
+    	            e.printStackTrace();
+    	        }
+    	}
+    	
+    	
+    	return ids;
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,30 +1,25 @@
 package components;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
+import javax.swing.RowFilter;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
-import com.formdev.flatlaf.FlatDarkLaf;
-import com.formdev.flatlaf.FlatLightLaf;
-import com.formdev.flatlaf.intellijthemes.FlatGrayIJTheme;
-
-import database.DatabaseManager;
 import database.PCRepository;
-import main.MainPanel;
+import windows.MainPanel;
 
 public class FilterPanel extends JPanel{
 	private int PANEL_WIDTH;
@@ -39,13 +34,15 @@ public class FilterPanel extends JPanel{
 	private boolean darkMode = false;
 	
 	private Font CB_FONT = new Font("Arial", Font.PLAIN, 20);
+	ImageIcon blackDropdown;
+	ImageIcon whiteDropdown;
 	
 	MainPanel mainPanel;
 	PCRepository PCRepo = new PCRepository();
 	DefaultComboBoxModel<String> specificDeviceModel;
 	JTextField searchField;
 	JComboBox<String> specificDevice;
-	JButton clearLogButton, warnButton, DLToggleButton;
+	JButton clearLogButton, warnButton, DLToggleButton, Dropdown;
 	JPanel cbPanel;
 	
 	
@@ -68,8 +65,6 @@ public class FilterPanel extends JPanel{
 		cbPanel.setPreferredSize(new Dimension(PANEL_WIDTH - 400, PANEL_HEIGHT));
 		cbPanel.setLayout(new FlowLayout(FlowLayout.LEADING, 10, 0));
 		
-		
-		
 		upperSectionPanel();
 		
 		searchField = new JTextField();
@@ -81,6 +76,8 @@ public class FilterPanel extends JPanel{
 		specificDevice = new JComboBox<>(specificDeviceModel);
 		specificDevice.setPreferredSize(new Dimension(CB_WIDTH, CB_HEIGHT));
 		specificDevice.setFocusable(false);
+		specificDevice.addActionListener(e -> setSorterFunction());
+		addDevicesToFilter();
 		
 		
 		cbPanel.add(searchField);
@@ -88,25 +85,38 @@ public class FilterPanel extends JPanel{
 		add(cbPanel);
 	}
 	
+	private void addDevicesToFilter() {
+		Vector<Integer> ids = PCRepository.getAllPcId();
+		specificDeviceModel.removeAllElements();
+		specificDeviceModel.addElement("All PCs");
+		for(int id : ids) {
+			specificDeviceModel.addElement(Integer.toString(id));
+		}
+	}
+	
+	private void setSorterFunction() {
+		TableRowSorter<TableModel> sorter = mainPanel.getTablePanel().getTableRowSorter();
+		String selected = (String) specificDevice.getSelectedItem();
+
+	    if (selected == null || selected.equals("All PCs")) {
+	        sorter.setRowFilter(null); // Show all
+	    } else {
+	        sorter.setRowFilter(RowFilter.regexFilter("^" + selected + "$", 0)); 
+	        // '0' means filter based on the first column (PC Name)
+	    }
+	}
+	
 	private void upperSectionPanel() {
-		
+		whiteDropdown = new ImageIcon("light-dropdown.png");
+		blackDropdown = new ImageIcon("black-dropdown.png");
 		JPanel upperPanel = new JPanel();
 		upperPanel.setPreferredSize(new Dimension(PANEL_WIDTH - 400, PANEL_HEIGHT - CB_HEIGHT));
 		upperPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 		
-		DLToggleButton = new JButton();
-		DLToggleButton.setPreferredSize(new Dimension(50, CB_HEIGHT));
-		DLToggleButton.addActionListener(e -> ThemeManager.toggleTheme(mainPanel.getMainFrame()));
-		
-		upperPanel.add(DLToggleButton);
+
 		cbPanel.add(upperPanel);
 	}
-
 	
-	public DefaultComboBoxModel<String> getSpecificDeviceModel() {
-		return specificDeviceModel;
-	}
-
 	private void Buttons() {
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension(PANEL_WIDTH - (PANEL_WIDTH - 300), PANEL_HEIGHT));
