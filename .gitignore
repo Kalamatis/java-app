@@ -1,0 +1,21 @@
+# Compiled output
+/bin/
+/out/
+/target/
+*.class
+# Ignore all JARs by default
+*.jar
+
+# ...but keep the ones in /lib/
+!lib/*.jar
+
+# IDE settings
+.settings/
+*.iml
+.idea/
+*.classpath
+*.project
+
+# OS junk
+Thumbs.db
+.DS_Store
